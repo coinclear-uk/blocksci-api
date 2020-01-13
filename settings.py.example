@@ -1,0 +1,12 @@
+USER = ''
+PASS = ''
+
+DEBUG = True
+
+# source: https://bottlepy.org/docs/dev/deployment.html#switching-the-server-backend
+# (auto, cgi, wsgiref (default), cheroot, don't use cherrypy as it doesn't work yet [code is in master but not tagged yet])
+SERVER = 'auto'
+HOST = 'localhost'
+PORT = '8080'
+# change to true to live reload when developing
+RELOAD = True
