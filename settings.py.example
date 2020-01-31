@@ -10,3 +10,6 @@ HOST = 'localhost'
 PORT = '8080'
 # change to true to live reload when developing
 RELOAD = True
+
+# blocksci config location (i.e '/home/dave/blocksci.conf')
+BLOCKSCI_CONFIG = ''
