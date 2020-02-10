@@ -11,5 +11,7 @@ PORT = '8080'
 # change to true to live reload when developing
 RELOAD = True
 
+RESULTS_PER_PAGE = 20
+
 # blocksci config location (i.e '/home/dave/blocksci.conf')
 BLOCKSCI_CONFIG = ''
