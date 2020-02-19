@@ -43,39 +43,24 @@ def address_search(address_string):
 
 
 #@auth_basic(check)
-@route('/address/<address:re:[13][a-km-zA-HJ-NP-Z1-9]{25,34}>/transactions/from/')
+@route('/address/<address:re:[13][a-km-zA-HJ-NP-Z1-9]{25,34}>/transactions/')
 def address_transactions_from(address):
-	return address_transactions_pagnated(True, address, 1)
+	return address_transactions_pagnated(address, 1)
 
 
 #@auth_basic(check)
-@route('/address/<address:re:[13][a-km-zA-HJ-NP-Z1-9]{25,34}>/transactions/from/<page:int>/')
+@route('/address/<address:re:[13][a-km-zA-HJ-NP-Z1-9]{25,34}>/transactions/<page:int>/')
 def address_transactions_from(address,page):
-	return address_transactions_pagnated(True, address, page)
+	return address_transactions_pagnated(address, page)
 
 
-#@auth_basic(check)
-@route('/address/<address:re:[13][a-km-zA-HJ-NP-Z1-9]{25,34}>/transactions/to/')
-def address_transactions_to(address):
-	return address_transactions_pagnated(False, address, 1)
-
-
-#@auth_basic(check)
-@route('/address/<address:re:[13][a-km-zA-HJ-NP-Z1-9]{25,34}>/transactions/to/<page:int>/')
-def address_transactions_to(address,page):
-	return address_transactions_pagnated(False, address, page)
-
-
-def address_transactions_pagnated(is_from, address_string, page):
+def address_transactions_pagnated(address_string, page):
     chain = blocksci.Blockchain(settings.BLOCKSCI_CONFIG)
     try:
         address = chain.address_from_string(address_string)
     except AttributeError:
         return json_not_found()
-    if is_from:
-    	transactions_as_list = list(address.out_txes)
-    else:
-        transactions_as_list = list(address.in_txes)
+    transactions_as_list = list(address.txes)
     start = (page - 1) * settings.RESULTS_PER_PAGE
     end = page * settings.RESULTS_PER_PAGE
     data = {
