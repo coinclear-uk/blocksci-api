@@ -1,4 +1,5 @@
 import itertools
+import numpy
 import blocksci
 from datetime import datetime, timedelta
 from bottle import auth_basic, json_dumps, debug, error, response, route, install, run, HTTPError, HTTPResponse
@@ -30,35 +31,51 @@ def address_search(address_string):
     data = {'transactions':{}}
     chain = blocksci.Blockchain(settings.BLOCKSCI_CONFIG)
     address = chain.address_from_string(address_string)
-    txes = list(address.txes)
+
     total_in = 0
     total_out = 0
-    total_day = 0
-    total_month = 0
-    total_year = 0
-    for tx in txes:
-        '''for tx_input in tx.inputs:
+
+    '''for inputs in address.txes.inputs:
+        for tx_input in inputs:
             try:
                 if tx_input.address == address:
                     total_out += 1
             except AttributeError:
                 pass
-        for tx_output in tx.outputs:
+    for outputs in address.txes.outputs:
+        for tx_output in outputs:
             try:
                 if tx_output.address == address:
                     total_in += 1
             except AttributeError:
                 pass'''
-        if tx.block_time > (now - timedelta(days=1)):
+
+    total_day = 0
+    total_month = 0
+    total_year = 0
+
+    first_transaction = None
+    last_transaction = None
+
+    numpy_now = numpy.datetime64('now')
+    numpy_day = numpy_now - numpy.timedelta64(1,'D')
+    numpy_month = numpy_now - numpy.timedelta64(30,'D')
+    numpy_year = numpy_now - numpy.timedelta64(365,'D')
+
+    for block_time in address.txes.block_time:
+        if first_transaction is None:
+            first_transaction = str(block_time)
+        last_transaction = str(block_time)
+        if block_time > numpy_day:
             total_day += 1
-        if tx.block_time > (now - timedelta(days=30)):
+        if block_time > numpy_month:
             total_month += 1
-        if tx.block_time > (now - timedelta(days=365)):
+        if block_time > numpy_year:
             total_year += 1
+
     data['type'] = str(address.type)
     data['balance'] = in_bitcoins(address.balance())
-    data['transactions']['first'] = {'hash':str(txes[0].block.hash),'block':txes[0].block.height,'date':str(txes[0].block_time)}
-    data['transactions']['last'] = {'hash':str(txes[-1].block.hash),'block':txes[-1].block.height,'date':str(txes[-1].block_time)}
+    data['transactions'] = {'first':first_transaction,'last':last_transaction}
     data['transactions']['total'] = {}
     data['transactions']['total']['in'] = address.out_txes_count()
     data['transactions']['total']['out'] = address.in_txes_count()
