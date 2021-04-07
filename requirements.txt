@@ -1,4 +1,4 @@
-bottle==0.12.18
+bottle==0.12.19
 bottle-errorsrest==0.0.3
 multiprocess>=0.70.5
 psutil>=5.4.2
